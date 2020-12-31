@@ -38,11 +38,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
     // TODO: Unsubscribe
     this.store.select('products').subscribe(
-      products => {
-        if (products) {
-          this.displayCode = products.showProductCode;
-        }
-      });
+      products => this.displayCode = products.showProductCode
+    );
   }
 
   ngOnDestroy(): void {
