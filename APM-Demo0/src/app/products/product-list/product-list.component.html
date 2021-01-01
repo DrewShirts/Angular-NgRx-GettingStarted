@@ -5,7 +5,7 @@
   </div>
 
   <div class="card-body"
-       *ngIf="products?.length">
+       *ngIf="products$ | async as products">
     <div class="list-group">
       <button class="list-group-item list-group-item-action rounded-0"
               *ngFor="let product of products"
