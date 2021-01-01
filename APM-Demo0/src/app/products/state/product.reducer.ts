@@ -68,5 +68,11 @@ export const productReducer = createReducer<ProductState>(
         starRating: 0
       }
     };
+  }),
+  on(ProductActions.loadProductsSuccess, (state, actions): ProductState => {
+    return {
+      ...state,
+      products: actions.products
+    }
   })
 );
