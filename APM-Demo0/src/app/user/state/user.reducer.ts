@@ -9,7 +9,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-  maskUserName: false,
+  maskUserName: true,
   currentUser: null
 };
 
