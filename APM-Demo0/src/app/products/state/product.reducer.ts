@@ -64,7 +64,7 @@ export const productReducer = createReducer<ProductState>(
         id: 0,
         productName: '',
         productCode: 'New',
-        description: 'string',
+        description: '',
         starRating: 0
       }
     };

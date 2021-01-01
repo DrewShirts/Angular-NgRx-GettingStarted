@@ -1,5 +1,6 @@
 import { createAction, createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
 import * as AppState from '../../state/app.state';
+import * as UserActions from './user.actions';
 
 import {User} from '../user';
 
@@ -31,10 +32,32 @@ export const getCurrentUser = createSelector(
 
 export const userReducer = createReducer(
   initialState,
-  on(createAction('[User] Mask User Name'), (state): UserState => {
+  on(UserActions.toggleMaskUserName, (state): UserState => {
     return {
       ...state,
       maskUserName: !state.maskUserName
+    };
+  }),
+  on(UserActions.setCurrentUser, (state, action): UserState => {
+    return {
+      ...state,
+      currentUser: action.user
+    };
+  }),
+  on(UserActions.clearCurrentUser, (state): UserState => {
+    return {
+      ...state,
+      currentUser: null
+    };
+  }),
+  on(UserActions.initializeCurrentUser, (state): UserState => {
+    return {
+      ...state,
+      currentUser: {
+        id: 0,
+        userName: '',
+        isAdmin: false
+      }
     };
   })
 );
