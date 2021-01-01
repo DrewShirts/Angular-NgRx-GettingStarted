@@ -1,13 +1,18 @@
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
-import * as AppState from '../../state/app.state';
+import { Product } from '../product';
+
+/* NgRx */
+import { createReducer, on, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as ProductActions from './product.actions';
+import * as AppState from '../../state/app.state';
 
-import {Product} from '../product';
-
+// Extends the app state to include the product feature.
+// This is required because products are lazy loaded.
+// So the reference to ProductState cannot be added to app.state.ts directly.
 export interface State extends AppState.State {
   products: ProductState;
 }
 
+// State for this feature (Product)
 export interface ProductState {
   showProductCode: boolean;
   currentProductId: number | null;
@@ -22,6 +27,7 @@ const initialState: ProductState = {
   error: ''
 };
 
+// Selector functions
 const getProductFeatureState = createFeatureSelector<ProductState>('products');
 
 export const getShowProductCode = createSelector(
@@ -60,7 +66,7 @@ export const getProducts = createSelector(
 export const getError = createSelector(
   getProductFeatureState,
   state => state.error
-)
+);
 
 export const productReducer = createReducer<ProductState>(
   initialState,
@@ -88,19 +94,19 @@ export const productReducer = createReducer<ProductState>(
       currentProductId: 0
     };
   }),
-  on(ProductActions.loadProductsSuccess, (state, actions): ProductState => {
+  on(ProductActions.loadProductsSuccess, (state, action): ProductState => {
     return {
       ...state,
-      products: actions.products,
+      products: action.products,
       error: ''
-    }
+    };
   }),
   on(ProductActions.loadProductsFailure, (state, action): ProductState => {
     return {
       ...state,
       products: [],
       error: action.error
-    }
+    };
   }),
   on(ProductActions.updateProductSuccess, (state, action): ProductState => {
     const updatedProducts = state.products.map(
@@ -110,12 +116,42 @@ export const productReducer = createReducer<ProductState>(
       products: updatedProducts,
       currentProductId: action.product.id,
       error: ''
-    }
+    };
   }),
   on(ProductActions.updateProductFailure, (state, action): ProductState => {
     return {
       ...state,
       error: action.error
-    }
+    };
+  }),
+  // After a create, the currentProduct is the new product.
+  on(ProductActions.createProductSuccess, (state, action): ProductState => {
+    return {
+      ...state,
+      products: [...state.products, action.product],
+      currentProductId: action.product.id,
+      error: ''
+    };
+  }),
+  on(ProductActions.createProductFailure, (state, action): ProductState => {
+    return {
+      ...state,
+      error: action.error
+    };
+  }),
+  // After a delete, the currentProduct is null.
+  on(ProductActions.deleteProductSuccess, (state, action): ProductState => {
+    return {
+      ...state,
+      products: state.products.filter(product => product.id !== action.productId),
+      currentProductId: null,
+      error: ''
+    };
+  }),
+  on(ProductActions.deleteProductFailure, (state, action): ProductState => {
+    return {
+      ...state,
+      error: action.error
+    };
   })
 );
